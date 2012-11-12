@@ -38,4 +38,19 @@ app.get( '/', function( req, res ) {
   )
 })
 
+app.get('/blog/new', function(req, res) {
+    res.render('blog_new.jade', {
+      title: 'New Post'
+    });
+});
+
+app.post('/blog/new', function(req, res){
+    articleProvider.save({
+        title: req.param('title'),
+        body: req.param('body')
+    }, function( error, articles ) {
+        res.redirect('/')
+    });
+});
+
 app.listen( 3000 )

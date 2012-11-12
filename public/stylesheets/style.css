@@ -155,3 +155,16 @@ p {
 .postComment {
   font-size: 10px;
 }
+.created_at {
+  display: none;
+}
+a {
+  text-decoration: none;
+}
+a:hover {
+  color: #444;
+}
+a:visited {
+  color: #444;
+  text-decoration: none;
+}
