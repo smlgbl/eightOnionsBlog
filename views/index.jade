@@ -1,10 +1,15 @@
-h1= title
-  p Welcome to #{title}
+extend layout
+block content
+  #posts
+    for post in posts
+      include post
 
-#articles
-  - each article in articles
-    .article
-      .created_at= article.created_at
-      .title
-        a(href="/blog/"+article._id)!= article.title
-      .body= article.body
+block sidebar
+  .widget
+    h1 Testing site.
+    p
+      | After a very long time of no changes to this site,
+      | I've decided to and managed to redo it, this time with node.js
+    p
+      | We shall see.
+      | - sml, smlgbl@gmail.com

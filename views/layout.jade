@@ -1,7 +1,14 @@
-doctype 5
+!!!5
 html
   head
-    title= title
+    title #{title}
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    block content
+    .container
+      .header
+        h1 eightOnions.com
+      .content
+        .main-content
+          block content
+      .footer
+        p Running on node with Express, Jade and Stylus
