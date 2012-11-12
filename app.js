@@ -9,7 +9,9 @@ var express = require('express')
   , http = require('http')
   , path = require('path');
 
-var app = express();
+var ArticleProvider = require('./articleProviderInMemory').ArticleProvider
+
+var app = express()
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -22,15 +24,24 @@ app.configure(function(){
   app.use(app.router);
   app.use(require('stylus').middleware(__dirname + '/public'));
   app.use(express.static(path.join(__dirname, 'public')));
-});
+})
 
 app.configure('development', function(){
-  app.use(express.errorHandler());
-});
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
+})
 
-app.get('/', routes.index);
-app.get('/users', user.list);
+app.configure('production', function(){
+  app.use(express.errorHandler())
+})
+
+var articleProvider = new ArticleProvider()
+
+app.get('/', funcion(req, res) {
+  articleProvider.findAll( function(error, docs) {
+    res.send(docs)
+  })
+}
 
 http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
-});
+  console.log("Express server listening on port " + app.get('port'))
+})
