@@ -1,5 +1,10 @@
-extends layout
-
-block content
-  h1= title
+h1= title
   p Welcome to #{title}
+
+#articles
+  - each article in articles
+    .article
+      .created_at= article.created_at
+      .title
+        a(href="/blog/"+article._id)!= article.title
+      .body= article.body
