@@ -42,8 +42,8 @@ ArticleProvider.prototype.save = function(articles, callback) {
 
 /* Lets bootstrap with dummy data */
 new ArticleProvider().save([
-  {title: 'Post one', body: 'Body one', comments:[{author:'Bob', comment:'I love it'}, {author:'Dave', comment:'This is rubbish!'}]},
-  {title: 'Post two', body: 'Body two'},
+  {title: 'Post one', body: 'Post until you drop', comments:[{author:'Bob', comment:'I love it'}, {author:'Dave', comment:'This is rubbish!'}]},
+  {title: 'Post two', body: 'Evi has a fabulous body.', comments:[{author: 'Samuel', comment: 'Yes, that\'s so true.'}]},
   {title: 'Post three', body: 'Body three'}
 ], function(error, articles){});
 

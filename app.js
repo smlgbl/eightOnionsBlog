@@ -3,6 +3,7 @@
 var express = require( 'express' )
   , stylus = require( 'stylus' )
   , nib = require( 'nib' )
+  , ArticleProvider = require('./articleProviderInMemory.js').ArticleProvider
 
 var app = express()
 function  compile( str, path ) {
@@ -10,19 +11,6 @@ function  compile( str, path ) {
     .set( 'filename', path )
 	.use( nib() )
 }
-
-// data
-function Post( title, content ) {
-  this.title = title
-  this.content = content
-}
-
-var posts = [ 
-    new Post( 'Testing node.js', 'Text of post 1 isn\'t that long. But it is available' )
-  , new Post( 'Post #2', 'Text of post 1 isn\'t that long. But it is available' )
-  , new Post( 'Post #3', 'Text of post 1 isn\'t that long. But it is available' )
-  , new Post( 'Post #4', 'Text of post 1 isn\'t that long. But it is available' )
-]
 
 app.set( 'views', __dirname + '/views' )
 app.set( 'view engine', 'jade' )
@@ -35,13 +23,19 @@ app.use( stylus.middleware(
 ))
 app.use( express.static( __dirname + '/public' ) )
 
+var articleProvider = new ArticleProvider()
+
 app.get( '/', function( req, res ) {
-  res.render( 'index',
-  {
-      title : 'eightOnions.com'
-    , posts : posts
-  }
+  articleProvider.findAll( 
+    function( error, articles) {
+      res.render( 'index',
+        {
+          title : 'eightOnions.com'
+        , posts : articles
+        }
+      )
+    }
   )
 })
 
-app.listen( 80 )
+app.listen( 3000 )
