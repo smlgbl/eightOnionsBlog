@@ -21,9 +21,6 @@ ArticleProvider.prototype.findById = function(id, callback) {
 ArticleProvider.prototype.save = function(articles, callback) {
   var article = null;
 
-  if( typeof(articles.length)=="undefined")
-    articles = [articles];
-
   for( var i =0;i< articles.length;i++ ) {
     article = articles[i];
     article._id = articleCounter++;

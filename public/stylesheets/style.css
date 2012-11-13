@@ -139,6 +139,17 @@ p {
   width: 500px;
   padding-bottom: 30px;
 }
+.content a {
+  text-decoration: none;
+  color: #444;
+}
+.content:hover {
+  color: #444;
+}
+.content:visited {
+  color: #444;
+  text-decoration: none;
+}
 .main-content {
   margin-top: 130px;
   width: 400px;
@@ -152,19 +163,20 @@ p {
   bottom: 0;
   height: 30px;
 }
+.footer a {
+  text-decoration: none;
+  color: #444;
+}
+.footer:hover {
+  color: #444;
+}
+.footer:visited {
+  color: #444;
+  text-decoration: none;
+}
 .postComment {
   font-size: 10px;
 }
 .created_at {
   display: none;
-}
-a {
-  text-decoration: none;
-}
-a:hover {
-  color: #444;
-}
-a:visited {
-  color: #444;
-  text-decoration: none;
 }

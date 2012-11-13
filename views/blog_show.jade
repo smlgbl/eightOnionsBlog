@@ -1,0 +1,23 @@
+extend layout
+h1= title
+block content
+  .article
+      .created_at= article.created_at
+      .title= article.title
+      .body= article.body
+      - each comment in article.comments
+        .comment
+          .person= comment.person
+          .comment= comment.comment
+      
+      .newCommentForm
+        form( method="post", action="/blog/addComment")
+          input( type="hidden", name="_id", value=article._id.toHexString())
+          .author
+            span Author :
+            input( type="text", name="person", id="addCommentPerson")
+          .newComment
+            span Comment :
+            textarea( name="comment", rows=5, id="addCommentComment")
+          #editArticleSubmit
+            input(type="submit", value="Send")
