@@ -78,4 +78,4 @@ app.post('/blog/addComment', function(req, res) {
        })
 })
 
-app.listen( 3000 )
+app.listen( 80 )
