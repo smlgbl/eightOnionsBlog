@@ -1,19 +1,18 @@
+var ES = require('./emailSettings.js')
 var EM = {};
 module.exports = EM;
 
 EM.server = require("emailjs/email").server.connect({
-
-	host 	    : 'smpt.gmail.com',
-	user 	    : 'smlgbl@gmail.com',
-	password    : 'S,S,mS,dbdT!',
+	host 	    : ES.host,
+	user 	    : ES.user,
+	password    : ES.pass,
 	ssl		    : true
-
 });
 
 EM.dispatchResetPasswordLink = function(account, callback)
 {
 	EM.server.send({
-		from         : 'admin@eightOnions.com',
+		from         : ES.sender,
 		to           : account.email,
 		subject      : 'Password Reset',
 		text         : 'something went wrong... :(',
