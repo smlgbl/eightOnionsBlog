@@ -4,7 +4,3 @@
   .created_at= post.created_at
   p
     .postContent= post.body
-    for comment in post.comments
-      .postComment
-        .commentAuthor= comment.author
-        .commentContent= comment.comment
