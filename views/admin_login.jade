@@ -1,0 +1,15 @@
+extend layout
+h1= title
+block content
+  #loginForm
+    p Log me in
+    form( method="post")
+      div
+        div
+          span Username :
+          input(type="text", name="user", id="user")
+        div
+          span Password :
+          input(type="password", name="pass", id="pass")
+        div#loginSubmit
+          input(type="submit", value="Send")

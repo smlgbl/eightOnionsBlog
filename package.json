@@ -7,6 +7,9 @@
 		"jade": "*",
 		"stylus": "*",
 		"nib": "*",
-		"mongodb": "*"
+		"mongodb": "*",
+		"bcrypt": "*",
+		"moment": "*",
+		"emailjs": "*"
 	}
 }
