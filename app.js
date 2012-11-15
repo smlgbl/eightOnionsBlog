@@ -113,15 +113,19 @@ app.post('/admin/new', function(req, res){
     // if user is not logged-in redirect back to login page //
     res.redirect('/admin');
   } else {
-    articleProvider.save(
-      [{
-        title: req.param('title'),
-        body: req.param('body')
-      }],
-      function( error, articles ) {
-        res.redirect('/')
-      }
-    )
+    if( req.param( 'title' ).length  && req.param( 'body' ).length ) {
+      articleProvider.save(
+        [{
+          title: req.param('title'),
+          body: req.param('body')
+        }],
+        function( error, articles ) {
+          res.redirect('/')
+        }
+      )
+	} else {
+	  res.redirect( '/admin/home' )
+	}
   }
 })
 
