@@ -73,14 +73,14 @@ app.post('/admin', function( req, res ) {
   } else {
     accountManager.manualLogin( req.param('user'), req.param('pass'), function(e, user) {
       if ( !user ) {
-        res.send( e, 400 )
+        res.redirect('/')
       } else {
         req.session.user = user
         if ( req.param('remember-me') == 'true' ) {
           res.cookie('user', user.user, { maxAge: 900000 })
           res.cookie('pass', user.pass, { maxAge: 900000 })
         }
-        res.send( user, 200 )
+        res.redirect('/admin/home')
       }
     })
   }
