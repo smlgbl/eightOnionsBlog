@@ -3,11 +3,10 @@ var EM = {};
 module.exports = EM;
 
 EM.server = require("emailjs/email").server.connect({
-
 	host 	    : ES.host,
 	user 	    : ES.user,
 	password    : ES.pass,
-	ssl		    : ES.ssl
+	ssl		    : true
 });
 
 EM.dispatchResetPasswordLink = function(account, callback)
