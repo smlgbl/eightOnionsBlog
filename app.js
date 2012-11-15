@@ -19,6 +19,7 @@ app.set( 'view engine', 'jade' )
 app.use( express.logger( 'dev' ) )
 app.use( express.bodyParser() )
 app.use( express.cookieParser() )
+app.use( express.session({ secret: 'super-duper-secret-secret' }));
 app.use( stylus.middleware( 
 {
   src: __dirname + '/public' 
@@ -33,13 +34,13 @@ app.get( '/', function( req, res ) {
   articleProvider.findAll( 
     function( error, articles) {
       res.render( 'index',
-      {
-        title : 'eightOnions.com'
-        , posts : articles
-      }
+        {
+          title : 'eightOnions.com'
+          , posts : articles
+        }
       )
     }
-    )
+  )
 })
 
 app.get('/admin', function( req, res ) {
@@ -86,27 +87,49 @@ app.post('/admin', function( req, res ) {
 })
 
 app.get('/admin/home', function(req, res) {
-  res.render('admin_home.jade', {
-    title: 'Welcome!'
-  })
+  if( req.session == undefined || req.session.user == null ) {
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/admin');
+  } else {
+    res.render('admin_home.jade', {
+      title: 'Welcome!'
+    })
+  }
 })
 
 app.get('/admin/new', function(req, res) {
-  res.render('blog_new.jade', {
-    title: 'New Post'
-  })
+  if( req.session.user == null ) {
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/admin');
+  } else {
+    res.render('blog_new.jade', {
+      title: 'New Post'
+    })
+  }
 })
 
 app.post('/admin/new', function(req, res){
-  articleProvider.save(
-    [{
-      title: req.param('title'),
-      body: req.param('body')
-    }],
-    function( error, articles ) {
-      res.redirect('/')
-    }
+  if( req.session.user == null ) {
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/admin');
+  } else {
+    articleProvider.save(
+      [{
+        title: req.param('title'),
+        body: req.param('body')
+      }],
+      function( error, articles ) {
+        res.redirect('/')
+      }
     )
+  }
+})
+
+app.get('/admin/logout', function(req, res) {
+  res.clearCookie('user')
+  res.clearCookie('pass')
+  req.session.destroy(function(e){ res.send('ok', 200); })
+  res.redirect('/')
 })
 
 app.get('/blog/:id', function(req, res) {
@@ -129,5 +152,9 @@ app.get('/blog/:id', function(req, res) {
 //            res.redirect('/blog/' + req.param('_id'))
 //        })
 // })
+
+app.get('*', function(req, res) {
+  res.redirect('/')
+})
 
 app.listen( 80 )

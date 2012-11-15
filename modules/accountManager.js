@@ -81,7 +81,6 @@ AM.update = function(newData, callback)
 	AM.accounts.findOne({user:newData.user}, function(e, o){
 		o.name 		= newData.name
 		o.email 	= newData.email
-		o.country 	= newData.country
 		if (newData.pass == ''){
 			AM.accounts.save(o)
 			callback(o)
