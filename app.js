@@ -3,7 +3,7 @@
 var express = require( 'express' )
 , stylus = require( 'stylus' )
 , nib = require( 'nib' )
-, ArticleProvider = require('./modules/articleProviderMongoDB.js').ArticleProvider
+, articleProvider = require('./modules/articleProviderMongoDB.js')
 , accountManager = require('./modules/accountManager.js')
 , emailDispatcher = require('./modules/emailDispatcher.js')
 
@@ -27,8 +27,6 @@ app.use( stylus.middleware(
 }
 ))
 app.use( express.static( __dirname + '/public' ) )
-
-var articleProvider = new ArticleProvider('localhost', 27017)
 
 app.get( '/', function( req, res ) {
   articleProvider.findAll( 
@@ -91,7 +89,7 @@ app.get('/admin/home', function(req, res) {
     // if user is not logged-in redirect back to login page //
     res.redirect('/admin');
   } else {
-    res.render('admin_home.jade', {
+    res.render('admin_home', {
       title: 'Welcome!'
     })
   }
@@ -102,7 +100,7 @@ app.get('/admin/new', function(req, res) {
     // if user is not logged-in redirect back to login page //
     res.redirect('/admin');
   } else {
-    res.render('blog_new.jade', {
+    res.render('blog_new', {
       title: 'New Post'
     })
   }
@@ -129,6 +127,36 @@ app.post('/admin/new', function(req, res){
   }
 })
 
+app.get('/admin/edit', function(req, res) {
+  if( req.session.user == null ) {
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/admin');
+  } else {
+    articleProvider.findAll( 
+      function( error, articles) {
+        res.render( 'admin_edit',
+          {
+            title : 'Edit Posts'
+            , posts : articles
+          }
+        )
+      }
+    )
+  }
+})
+
+app.get('/admin/delete/:id', function(req, res) {
+  if( req.session.user == null ) {
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/admin');
+  } else {
+
+    articleProvider.delete(req.params.id, function(error) {
+      res.redirect('/admin/edit')
+    })
+  }
+})
+
 app.get('/admin/logout', function(req, res) {
   res.clearCookie('user')
   res.clearCookie('pass')
@@ -138,11 +166,11 @@ app.get('/admin/logout', function(req, res) {
 
 app.get('/blog/:id', function(req, res) {
   articleProvider.findById(req.params.id, function(error, article) {
-    res.render('blog_show.jade',
-    {
-      title: article.title,
-      article:article
-    }
+    res.render('blog_show',
+      {
+        title: article.title,
+        article: article
+      }
     )
   })
 })
