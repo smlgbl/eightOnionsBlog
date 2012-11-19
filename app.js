@@ -201,13 +201,9 @@ app.get('/admin/logout', function(req, res) {
 
 app.get('/blog/:id', function(req, res) {
   articleProvider.findById(req.params.id, function(error, article) {
-    if( error ) {
-      res.render( 'blog_show',
-        {
-          title: "ERROR",
-          article: error
-        }
-      )
+    if( error || null == article ) {
+      console.log( "Error: Coulnd't load " + req.params.id )
+      res.redirect('/')
     } else {
       res.render('blog_show',
         {
@@ -215,7 +211,7 @@ app.get('/blog/:id', function(req, res) {
           article: article
         }
       )
-	}
+    }
   })
 })
 

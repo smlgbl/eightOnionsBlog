@@ -38,8 +38,11 @@ AP.findAll = function(callback) {
 
 AP.findById = function(id, callback) {
   AP.articles.findOne({_id: this.getObjectId(id)}, function(error, result) {
-    if( error ) callback(error)
-    else callback(null, result)
+    if( error ) {
+      callback(error)
+    } else {
+      callback(null, result)
+    }
   })
 }
 
