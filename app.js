@@ -186,7 +186,6 @@ app.get('/admin/delete/:id', function(req, res) {
     // if user is not logged-in redirect back to login page //
     res.redirect('/admin');
   } else {
-
     articleProvider.delete(req.params.id, function(error) {
       res.redirect('/admin/edit')
     })
