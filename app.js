@@ -145,6 +145,42 @@ app.get('/admin/edit', function(req, res) {
   }
 })
 
+app.get('/admin/edit/:id', function(req, res) {
+  if( req.session.user == null ) {
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/admin');
+  } else {
+    articleProvider.findById( req.params.id, 
+      function( error, post) {
+        res.render( 'admin_edit_post',
+          {
+            title : 'Edit Post'
+            , post : post
+          }
+        )
+      }
+    )
+  }
+})
+
+app.post('/admin/edit/:id', function(req, res) {
+  if( req.session.user == null ) {
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/admin');
+  } else {
+    articleProvider.updateArticle( req.params.id
+      , {
+          title: req.param('title'),
+          body: req.param('body')
+        }
+      , function( error, post) {
+        res.redirect('/admin/edit')
+      }
+    )
+  }
+})
+
+
 app.get('/admin/delete/:id', function(req, res) {
   if( req.session.user == null ) {
     // if user is not logged-in redirect back to login page //

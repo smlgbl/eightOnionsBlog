@@ -5,5 +5,8 @@ block content
   #posts
     for post in posts
       p.editPost= post.title
-        a(href='/admin/delete/' + post._id.toHexString()) Delete
+        .deleteLink
+          a(href='/admin/delete/' + post._id.toHexString()) Delete
+        .editLink
+          a(href='/admin/edit/' + post._id.toHexString()) Edit
 

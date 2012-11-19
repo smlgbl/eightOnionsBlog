@@ -76,3 +76,14 @@ AP.addCommentToArticle = function(articleId, comment, callback) {
     }
   )
 }
+
+AP.updateArticle = function(id, article, callback) {
+  AP.articles.update(
+    {_id: this.getObjectId(id)},
+    article,
+    function(error, article) {
+      if(error) callback(error)
+      else callback(null, article)
+    }
+  )
+}
