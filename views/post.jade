@@ -4,6 +4,6 @@
       a(href="/blog/" + post._id.toHexString())!= post.title
   .created_at= post.created_at
   .postContent
-    p= post.body
+    p!= post.body
 
 
