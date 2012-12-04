@@ -3,20 +3,36 @@
 var express = require( 'express' )
 , stylus = require( 'stylus' )
 , nib = require( 'nib' )
-, rss = require( 'rss' )
 , articleProvider = require('./modules/articleProviderMongoDB.js')
 , accountManager = require('./modules/accountManager.js')
 , emailDispatcher = require('./modules/emailDispatcher.js')
-
-var feed = new rss( {
-	title: 'eightOnions.com blog feed',
-	feed_url: 'http://www.eightonions.com/rss.xml',
-	site_url: 'http://www.eightonions.com',
-	image_url: 'http://www.eightonions.com/favicon.ico',
-	author: 'smlgbl',
-})
+, rssManager = require('./modules/rssManager.js')
 
 var xml = ''
+var feed = rssManager.initFeed( 'eightOnions blog', 'http://www.eightonions.com', '/rss.xml', '/favicon.ico', 'smlgbl' )
+var initFeed = function() {
+	articleProvider.findAll( 
+		function( error, articles) {
+			if( error ) {
+				console.log( error )
+			} else {
+				for( var a in articles ) {
+					rssManager.addItem( feed, {
+						title: articles[ a ].title,
+						description: articles[ a ].body,
+						url: 'http://www.eightonions.com/blog/' + articles[ a ]._id.toHexString(),
+						author: 'sml',
+						date: articles[ a ].created_at
+					} )
+				}
+				console.log( "updated feed." )
+				xml = rssManager.xml( feed )
+			}
+		}
+	)
+}
+
+articleProvider.init( initFeed )
 
 var app = express()
 function compile( str, path ) {
@@ -250,23 +266,4 @@ var port = 80
 app.listen( port )
 
 console.log( "Listening on port " + port )
-articleProvider.findAll( 
-	function( error, articles) {
-		if( error ) {
-			console.log( error )
-		} else {
-			for( var a in articles ) {
-				feed.item( {
-					title: articles[ a ].title,
-					description: articles[ a ].body,
-					url: 'http://www.eightonions.com/blog/' + articles[ a ]._id.toHexString(),
-					author: 'sml',
-					date: articles[ a ].created_at
-				})
-			}
-			console.log( "updated feed." )
-			xml = feed.xml()
-		}
-	}
-)
 

@@ -10,16 +10,19 @@ var dbName = 'node-mongo-blog'
 
 var AP = {}
 
-AP.db = new Db(dbName, new Server(dbHost, dbPort, {auto_reconnect: true}, {}), {safe:false})
-AP.db.open(function(e, d){
-  if (e) {
-    console.log(e)
-  } else{
-    console.log('connected to database :: ' + dbName)
-  }
-})
-
-AP.articles = AP.db.collection('articles')
+AP.init = function( callback ) {
+	AP.db = new Db(dbName, new Server(dbHost, dbPort, {auto_reconnect: true}, {}), {safe:false})
+		AP.db.open(function(e, d){
+			if (e) {
+				console.log(e)
+				callback(e)
+			} else{
+				console.log('connected to database :: ' + dbName)
+				callback()
+			}
+		})
+	AP.articles = AP.db.collection('articles')
+}
 
 module.exports = AP
 
