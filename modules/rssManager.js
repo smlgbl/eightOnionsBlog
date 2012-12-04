@@ -14,8 +14,9 @@ RSS.initFeed = function( title, site, feed, image, author ) {
 	} )
 }
 
-RSS.addItem = function( feed, item ) {
+RSS.addItem = function( feed, item, callback ) {
 	feed.item( item )
+	if( callback ) callback()
 }
 
 RSS.updateFeed = function( feed, items, callback ) {

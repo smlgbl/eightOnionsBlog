@@ -23,7 +23,7 @@ var initFeed = function() {
 						url: 'http://www.eightonions.com/blog/' + articles[ a ]._id.toHexString(),
 						author: 'sml',
 						date: articles[ a ].created_at
-					} )
+					})
 				}
 				console.log( "updated feed." )
 				xml = rssManager.xml( feed )
@@ -144,9 +144,20 @@ app.post('/admin/new', function(req, res){
           title: req.param('title'),
           body: req.param('body')
         }],
-        function( error, articles ) {
-          res.redirect('/')
-        }
+		function( error, articles ) {
+		  res.redirect('/')
+		  for( var a in articles ) {
+			  rssManager.addItem( feed, {
+				  title: articles[ a ].title,
+				  description: articles[ a ].body,
+				  url: 'http://www.eightonions.com/blog/' + articles[ a ]._id.toHexString(),
+				  author: 'sml',
+				  date: articles[ a ].created_at
+			  }, function() {
+				  xml = rssManager.xml()
+			  } )
+		  }
+		}
       )
 	} else {
 	  res.redirect( '/admin/home' )
