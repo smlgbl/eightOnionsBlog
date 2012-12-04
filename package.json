@@ -10,7 +10,7 @@
 		"mongodb": "*",
 		"bcrypt": "*",
 		"moment": "*",
-		"emailjs": "*"
+		"emailjs": "*",
 		"rss": "*"
 	}
 }
