@@ -154,7 +154,7 @@ app.post('/admin/new', function(req, res){
 				  author: 'sml',
 				  date: articles[ a ].created_at
 			  }, function() {
-				  xml = rssManager.xml()
+				  xml = rssManager.xml( feed )
 			  } )
 		  }
 		}
