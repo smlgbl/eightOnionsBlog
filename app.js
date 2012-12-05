@@ -3,10 +3,12 @@
 var express = require( 'express' )
 , stylus = require( 'stylus' )
 , nib = require( 'nib' )
+, nodeio = require( 'node.io' )
 , articleProvider = require('./modules/articleProviderMongoDB.js')
 , accountManager = require('./modules/accountManager.js')
 , emailDispatcher = require('./modules/emailDispatcher.js')
 , rssManager = require('./modules/rssManager.js')
+, dayTextJob = require( './scrapers/daysText' )
 
 var xml = ''
 var feed = rssManager.initFeed( 'eightOnions blog', 'http://www.eightonions.com', '/rss.xml', '/favicon.ico', 'smlgbl' )
@@ -267,6 +269,14 @@ app.get( '/rss.xml', function( req, res ) {
 	res.setHeader( 'Content-Type', 'text/plain' )
 	res.setHeader( 'Content-Lenght', xml.length )
 	res.end( xml )
+})
+
+app.get( '/dt', function( req, res ) {
+	nodeio.start( dayTextJob, {}, function( err, output ) {
+		res.setHeader( 'Content-Type', 'text/plain' )
+		res.setHeader( 'Content-Lenght', output.length )
+		res.end( output.toString() )
+	}, true )
 })
 
 app.get('*', function(req, res) {
