@@ -3,12 +3,12 @@
 var express = require( 'express' )
 , stylus = require( 'stylus' )
 , nib = require( 'nib' )
-, nodeio = require( 'node.io' )
+, moment = require( 'moment' )
 , articleProvider = require('./modules/articleProviderMongoDB.js')
 , accountManager = require('./modules/accountManager.js')
 , emailDispatcher = require('./modules/emailDispatcher.js')
 , rssManager = require('./modules/rssManager.js')
-, dayTextJob = require( './scrapers/daysText' )
+, dayTextJob = require( './scrapers/daysText.js' )
 
 var xml = ''
 var feed = rssManager.initFeed( 'eightOnions blog', 'http://www.eightonions.com', '/rss.xml', '/favicon.ico', 'smlgbl' )
@@ -124,6 +124,37 @@ app.get('/admin/home', function(req, res) {
   }
 })
 
+app.get( '/admin/cal', function( req, res ) {
+  if( req.session == undefined || req.session.user == null ) {
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/admin');
+  } else {
+    res.render('admin_cal', {
+      title: 'Days text'
+    })
+  }
+})
+
+app.post( '/admin/cal', function( req, res ) {
+  if( req.session == undefined || req.session.user == null ) {
+    // if user is not logged-in redirect back to login page //
+    res.redirect('/admin');
+  } else {
+	console.log( req.param( 'date' ) )
+    if( req.param( 'date' ).length && moment( req.param( 'date' ) ).isValid() ) {
+		var date = moment( req.param( 'date' ) ).toDate()
+		dayTextJob( date, function( err, output ) {
+			if( err ) output = err
+			res.setHeader( 'Content-Type', 'text/plain' )
+			res.end( output.toString() )
+			console.log( date.toString() + ': ' + output )
+		} )
+	} else {
+      res.redirect('/admin/cal');
+	}
+  }
+})
+
 app.get('/admin/new', function(req, res) {
   if( req.session.user == null ) {
     // if user is not logged-in redirect back to login page //
@@ -140,7 +171,7 @@ app.post('/admin/new', function(req, res){
     // if user is not logged-in redirect back to login page //
     res.redirect('/admin');
   } else {
-    if( req.param( 'title' ).length  && req.param( 'body' ).length ) {
+    if( req.param( 'title' ).length && req.param( 'body' ).length ) {
       articleProvider.save(
         [{
           title: req.param('title'),
@@ -271,12 +302,13 @@ app.get( '/rss.xml', function( req, res ) {
 	res.end( xml )
 })
 
-app.get( '/dt', function( req, res ) {
-	nodeio.start( dayTextJob, {}, function( err, output ) {
+app.get('/dt', function(req, res) {
+	dayTextJob( new Date(), function( err, output ) {
+		if( err ) output = err
 		res.setHeader( 'Content-Type', 'text/plain' )
-		res.setHeader( 'Content-Lenght', output.length )
+//		res.setHeader( 'Content-Length', output.toString().length )
 		res.end( output.toString() )
-	}, true )
+	} )
 })
 
 app.get('*', function(req, res) {

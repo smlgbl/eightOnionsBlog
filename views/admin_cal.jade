@@ -1,0 +1,10 @@
+extend layout
+h1= title
+block content
+  form( method="post")
+    div
+      span Enter a date :
+      input(type="text", name="date", id="daysTextDate")
+    div#dateSubmit
+      input(type="submit", value="Send")
+
