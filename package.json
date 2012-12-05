@@ -11,6 +11,7 @@
 		"bcrypt": "*",
 		"moment": "*",
 		"emailjs": "*",
-		"rss": "*"
+		"rss": "*",
+		"node.io": "*"
 	}
 }
