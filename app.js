@@ -9,6 +9,12 @@ var express = require( 'express' )
 , emailDispatcher = require('./modules/emailDispatcher.js')
 , rssManager = require('./modules/rssManager.js')
 , dayTextJob = require( './scrapers/daysText.js' )
+, GoogleCalendar = require('google-calendar')
+
+var google_calendar = new GoogleCalendar.GoogleCalendar(
+  '98879275279.apps.googleusercontent.com', 
+  'X8UlvdT5YZGgWpPRtXoO7Ktj',
+  'http://localhost:80/authentication')
 
 var xml = ''
 var feed = rssManager.initFeed( 'eightOnions blog', 'http://www.eightonions.com', '/rss.xml', '/favicon.ico', 'smlgbl' )
@@ -309,6 +315,42 @@ app.get('/dt', function(req, res) {
 //		res.setHeader( 'Content-Length', output.toString().length )
 		res.end( output.toString() )
 	} )
+})
+
+app.all('/authentication', function(req, res){
+	if(!req.query.code){
+		//Redirect the user to Google's authentication form 
+		google_calendar.getGoogleAuthorizeTokenURL(function(err, redirectUrl) {
+			if(err) res.send(500,err)
+			else res.redirect(redirectUrl)
+		})
+	}else{
+		//Get access_token from the code
+		google_calendar.getGoogleAccessToken(req.query, function(err, access_token, refresh_token) {
+			if(err) res.send(500,err)
+			else { 
+				req.session.access_token = access_token
+				req.session.refresh_token = refresh_token
+				google_calendar.listCalendarList(access_token, function(err, calendarList) {
+					var body = ''
+					calendarList.items.forEach(function(calendar) {
+						//Events.list
+						console.log('Calendar : ' + calendar.summary)
+						body += 'Calendar: ' + calendar.summary + '\n'
+						if( calendar.summary == 'es' ) {
+							google_calendar.listEvent(access_token, calendar.id, function(err, events) {
+								events.items.forEach( function(event) {
+									console.log( 'Event: ' + event.summary )
+									body += 'Event: ' + event.summary + '\n'
+								})
+							})
+						}
+					})
+					res.end( body )
+				})
+			}
+		})
+	}
 })
 
 app.get('*', function(req, res) {
