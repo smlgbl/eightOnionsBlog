@@ -12,6 +12,7 @@
 		"moment": "*",
 		"emailjs": "*",
 		"rss": "*",
-		"node.io": "*"
+		"node.io": "*",
+		"google-calendar": "*"
 	}
 }
