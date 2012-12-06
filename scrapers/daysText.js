@@ -15,7 +15,8 @@ module.exports = function( date, callback ) {
 					} else {
 						var t = $('p.sa').fulltext
 						var c = $('p.sb').fulltext
-						this.emit( t + '\n' + c )
+						this.emit( t )
+						this.emit( c )
 					}
 				}
 			)

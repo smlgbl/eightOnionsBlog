@@ -136,29 +136,54 @@ app.get( '/admin/cal', function( req, res ) {
     res.redirect('/admin');
   } else {
     res.render('admin_cal', {
-      title: 'Days text'
+      title: 'Days text',
+	  texts: []
     })
   }
 })
 
-app.post( '/admin/cal', function( req, res ) {
-  if( req.session == undefined || req.session.user == null ) {
-    // if user is not logged-in redirect back to login page //
-    res.redirect('/admin');
-  } else {
-	console.log( req.param( 'date' ) )
-    if( req.param( 'date' ).length && moment( req.param( 'date' ) ).isValid() ) {
-		var date = moment( req.param( 'date' ) ).toDate()
-		dayTextJob( date, function( err, output ) {
-			if( err ) output = err
-			res.setHeader( 'Content-Type', 'text/plain' )
-			res.end( output.toString() )
-			console.log( date.toString() + ': ' + output )
-		} )
-	} else {
-      res.redirect('/admin/cal');
+// wow, recursion!
+function gatherTexts( start, end, callback ) {
+	var texts = []
+	var date = start
+	var textCallback = function( err, output ) {
+		if( err ) {
+			console.log( err )
+		}
+		else {
+			texts.push( {
+				title: date.toString(),
+				scripture: output[ 0 ],
+				comment: output[ 1 ]
+			})
+		}
+		date = moment( date ).add( 'days', 1 ).toDate()
+		if( date < end ) dayTextJob( date, textCallback )
+		else callback( texts )
 	}
-  }
+	dayTextJob( date, textCallback )
+}
+
+app.post( '/admin/cal', function( req, res ) {
+	if( req.session == undefined || req.session.user == null ) {
+		// if user is not logged-in redirect back to login page //
+		res.redirect('/admin');
+	} else {
+		if( req.param( 'startdate' ).length && moment( req.param( 'startdate' ) ).isValid() ) {
+			var start = moment( req.param( 'startdate' ) ).toDate()
+			if( req.param( 'enddate' ).length && moment( req.param( 'enddate' ) ).isValid() ) {
+				var end = moment( req.param( 'enddate' ) ).toDate()
+			} else var end = start + 1
+			gatherTexts( start, end, function( texts ) {
+				res.render( 'admin_cal', {
+					title: 'Days texts',
+					texts: texts
+				})
+			})
+		} else {
+			res.redirect('/admin/cal');
+		}
+	}
 })
 
 app.get('/admin/new', function(req, res) {

@@ -3,8 +3,14 @@ h1= title
 block content
   form( method="post")
     div
-      span Enter a date :
-      input(type="text", name="date", id="daysTextDate")
+      span Enter a start date :
+      input(type="text", name="startdate", id="daysTextDateStart")
+    div
+      span Enter an end date :
+      input(type="text", name="enddate", id="daysTextDateEnd")
     div#dateSubmit
       input(type="submit", value="Send")
 
+    #texts
+      for text in texts
+        include text
