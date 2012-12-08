@@ -11,9 +11,8 @@ block content
     #type
       span What would you like?
       select( name="type" )
-        option( value="dt" ) Days' text
-        option( value="br" ) Bible reading
-        option( value="wt" ) Watchtower subject
+        for job in jobs
+          option( value=job )= job
     #dateSubmit
       input(type="submit", value="Send")
 

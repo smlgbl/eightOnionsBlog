@@ -4,14 +4,12 @@ var express = require( 'express' )
 , stylus = require( 'stylus' )
 , nib = require( 'nib' )
 , moment = require( 'moment' )
+, GoogleCalendar = require('google-calendar')
 , articleProvider = require('./modules/articleProviderMongoDB.js')
 , accountManager = require('./modules/accountManager.js')
 , emailDispatcher = require('./modules/emailDispatcher.js')
 , rssManager = require('./modules/rssManager.js')
-, dayTextJob = require( './scrapers/daysText.js' )
-, bibleReadingJob = require('./scrapers/bibleReading.js')
-, wtJob = require('./scrapers/wtSubject.js')
-, GoogleCalendar = require('google-calendar')
+, jobProvider = require('./modules/jobProvider.js')
 
 var google_calendar = new GoogleCalendar.GoogleCalendar(
   '98879275279.apps.googleusercontent.com', 
@@ -139,75 +137,13 @@ app.get( '/admin/cal', function( req, res ) {
   } else {
     res.render('admin_cal', {
       title: 'Days text',
+	  jobs: Object.keys( jobProvider ),
 	  texts: []
     })
   }
 })
 
 // wow, recursion!
-function gatherTexts( start, end, callback ) {
-	var texts = []
-	var date = start
-	var textCallback = function( err, output ) {
-		if( err ) {
-			console.log( err )
-		}
-		else {
-			texts.push( {
-				title: date.toString(),
-				scripture: output[ 0 ],
-				comment: output[ 1 ]
-			})
-		}
-		date = moment( date ).add( 'days', 1 ).toDate()
-		if( date < end ) dayTextJob( date, textCallback )
-		else callback( texts )
-	}
-	dayTextJob( date, textCallback )
-}
-
-function gatherReadingSchedule( start, end, callback ) {
-	var texts = []
-	var date = start
-	var textCallback = function( err, output ) {
-		if( err ) {
-			console.log( err )
-		}
-		else {
-			texts.push( {
-				title: date.toString(),
-				scripture: output[ 0 ],
-				comment: ''
-			})
-		}
-		date = moment( date ).add( 'days', 7 ).toDate()
-		if( date < end ) bibleReadingJob( date, textCallback )
-		else callback( texts )
-	}
-	bibleReadingJob( date, textCallback )
-}
-
-function gatherWTs( start, end, callback ) {
-	var texts = []
-	var date = start
-	var textCallback = function( err, output ) {
-		if( err ) {
-			console.log( err )
-		}
-		else {
-			texts.push( {
-				title: date.toString(),
-				scripture: output[ 0 ],
-				comment: ''
-			})
-		}
-		date = moment( date ).add( 'days', 7 ).toDate()
-		if( date < end ) wtJob( date, textCallback )
-		else callback( texts )
-	}
-	wtJob( date, textCallback )
-}
-
 
 app.post( '/admin/cal', function( req, res ) {
 	if( req.session == undefined || req.session.user == null ) {
@@ -219,31 +155,16 @@ app.post( '/admin/cal', function( req, res ) {
 			if( req.param( 'enddate' ).length && moment( req.param( 'enddate' ) ).isValid() ) {
 				var end = moment( req.param( 'enddate' ) ).toDate()
 			} else var end = start + 1
-			if( req.param( 'type' ).length ) {
-				switch( req.param('type') ) {
-					case 'dt': gatherTexts( start, end, function( texts ) {
-									res.render( 'admin_cal', {
-										title: 'Days texts',
-										texts: texts
-									})
-								})
-								break;
-					case 'br': gatherReadingSchedule( start, end, function( texts ) {
-									res.render( 'admin_cal', {
-										title: 'Bible reading schedule',
-										texts: texts
-									})
-								})
-								break;
-					case 'wt': gatherWTs( start, end, function( texts ) {
-									res.render( 'admin_cal', {
-										title: 'Watchtower subjects',
-										texts: texts
-									})
-								})
-								break;
-				}
-			}
+			if( req.param( 'type' ).length && jobProvider[ req.param('type' ) ].length ) {
+				console.log('Calling ' + req.param('type'))
+				jobProvider[req.param('type')]( start, end, function( texts ) {
+					res.render( 'admin_cal', {
+						title: req.param('type'),
+						texts: texts,
+						jobs: Object.keys( jobProvider )
+					})
+				})
+			} else console.log('Not calling ' + req.param('type'))
 		} else {
 			res.redirect('/admin/cal');
 		}
