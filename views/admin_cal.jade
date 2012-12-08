@@ -2,13 +2,19 @@ extend layout
 h1= title
 block content
   form( method="post")
-    div
+    #startdate
       span Enter a start date :
       input(type="text", name="startdate", id="daysTextDateStart")
-    div
+    #startdate
       span Enter an end date :
       input(type="text", name="enddate", id="daysTextDateEnd")
-    div#dateSubmit
+    #type
+      span What would you like?
+      select( name="type" )
+        option( value="dt" ) Days' text
+        option( value="br" ) Bible reading
+        option( value="wt" ) Watchtower subject
+    #dateSubmit
       input(type="submit", value="Send")
 
     #texts
