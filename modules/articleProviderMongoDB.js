@@ -18,7 +18,7 @@ AP.init = function( callback ) {
 				callback(e)
 			} else{
 				console.log('connected to database :: ' + dbName)
-				callback()
+				AP.findAll( callback )
 			}
 		})
 	AP.articles = AP.db.collection('articles')

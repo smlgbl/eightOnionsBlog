@@ -1,0 +1,12 @@
+extend layout
+h1= title
+block content
+  form( method="post")
+    #calendar
+      span Which one would you like?
+      select( name="calendarSelect" )
+        for cal in calendars
+          option( value=cal )= cal.summary
+    #calSubmit
+      input(type="submit", value="Send")
+
